@@ -223,10 +223,17 @@ class ProductController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
-        if ($product->stockDetails()->count() > 0) {
-            return back()->withErrors('لا يمكن حذف هذا المنتج لانه مرتبط ببعض الفواتير او رصيد افتتاحي ');
+        $totalStock = (float) $product->stocks()->sum('quantity');
+
+        if ($totalStock > 0) {
+            return back()->withErrors('لا يمكن حذف هذا المنتج لانه الكمية الحالية في المخزن غير صفر');
         }
-        $product->delete();
+
+        DB::transaction(function () use ($product) {
+            $product->stockDetails()->delete();
+            $product->delete();
+        });
+
         return back()->with('success_deleted', 'تم الحذف بنجاح ');
     }
 
