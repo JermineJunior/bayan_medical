@@ -224,32 +224,44 @@
                                                             {{ number_format($sale_invoice->sub_total_amount + $sale_invoice->tax_amount, 2) }}
                                                         </td>
                                                     </tr>
-                                                    <tr>
-                                                        <td colspan="4"></td>
-                                                        <td colspan="2">الخصم</td>
-                                                        <td colspan="2">
-                                                            {{ number_format($sale_invoice->discount_amount, 2) }}</td>
-                                                    </tr>
+                                                    @if ((float) $sale_invoice->discount_amount > 0)
+                                                        <tr>
+                                                            <td colspan="4"></td>
+                                                            <td colspan="2">الخصم</td>
+                                                            <td colspan="2">
+                                                                {{ number_format($sale_invoice->discount_amount, 2) }}</td>
+                                                        </tr>
+                                                    @endif
                                                     <tr>
                                                         <td colspan="4"></td>
                                                         <td colspan="2">صافي الفاتورة</td>
                                                         <td colspan="2">
                                                             {{ number_format($sale_invoice->total_amount, 2) }}</td>
                                                     </tr>
-                                                    <tr>
-                                                        <td colspan="4"></td>
-                                                        <td colspan="2">مدفوع نقداً</td>
-                                                        <td colspan="2">
-                                                            {{ number_format($sale_invoice->cash_amount_total, 2) }}
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="4"></td>
-                                                        <td colspan="2">مدفوع بالبنك</td>
-                                                        <td colspan="2">
-                                                            {{ number_format($sale_invoice->bank_amount_total, 2) }}
-                                                        </td>
-                                                    </tr>
+                                                    @php
+                                                        $cash = (float) $sale_invoice->cash_amount_total;
+                                                        $bank = (float) $sale_invoice->bank_amount_total;
+                                                        $showCash = $cash > 0 || $bank <= 0;
+                                                        $showBank = $bank > 0 || $cash <= 0;
+                                                    @endphp
+                                                    @if ($showCash)
+                                                        <tr>
+                                                            <td colspan="4"></td>
+                                                            <td colspan="2">مدفوع نقداً</td>
+                                                            <td colspan="2">
+                                                                {{ number_format($sale_invoice->cash_amount_total, 2) }}
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                    @if ($showBank)
+                                                        <tr>
+                                                            <td colspan="4"></td>
+                                                            <td colspan="2">مدفوع بالبنك</td>
+                                                            <td colspan="2">
+                                                                {{ number_format($sale_invoice->bank_amount_total, 2) }}
+                                                            </td>
+                                                        </tr>
+                                                    @endif
                                                     @if ($sale_invoice->transaction_no)
                                                         <tr>
                                                             <td colspan="4"></td>

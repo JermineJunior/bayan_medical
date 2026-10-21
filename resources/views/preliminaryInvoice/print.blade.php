@@ -225,13 +225,15 @@
                                                             {{ number_format($PreliminaryInvoice->sub_total_amount + $PreliminaryInvoice->tax_amount, 2) }}
                                                         </td>
                                                     </tr>
-                                                    <tr>
-                                                        <td colspan="4"></td>
-                                                        <td colspan="2">الخصم</td>
-                                                        <td colspan="2">
-                                                            {{ number_format($PreliminaryInvoice->discount_amount, 2) }}
-                                                        </td>
-                                                    </tr>
+                                                    @if ((float) $PreliminaryInvoice->discount_amount > 0)
+                                                        <tr>
+                                                            <td colspan="4"></td>
+                                                            <td colspan="2">الخصم</td>
+                                                            <td colspan="2">
+                                                                {{ number_format($PreliminaryInvoice->discount_amount, 2) }}
+                                                            </td>
+                                                        </tr>
+                                                    @endif
                                                     <tr>
                                                         <td colspan="4"></td>
                                                         <td colspan="2">صافي الفاتورة</td>
