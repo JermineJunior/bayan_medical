@@ -90,6 +90,10 @@
                                     <input type="checkbox" class="custom-control-input" id="no_price_filter">
                                     <label class="custom-control-label" for="no_price_filter">بدون سعر فقط</label>
                                 </div>
+                                <div class="custom-control custom-checkbox align-self-center mr-2">
+                                    <input type="checkbox" class="custom-control-input" id="zero_stock_filter">
+                                    <label class="custom-control-label" for="zero_stock_filter">صفر كمية فقط</label>
+                                </div>
                             </div>
 
                             <!-- زر الرجوع -->
@@ -125,7 +129,8 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $product->name }}</td>
                                         <td>{{ $product->name_en }}</td>
-                                        <td>{{ $product->convertQuantity($product->stocks->sum('pivot.quantity')) ?? null }}
+                                        <td data-zero-stock="{{ $product->stocks->sum('pivot.quantity') == 0 ? '1' : '0' }}">
+                                            {{ $product->convertQuantity($product->stocks->sum('pivot.quantity')) ?? null }}
                                         </td>
                                         <td>{{ $product->category->name }}</td>
                                         <td>{{ $product->expire_date }}</td>
@@ -314,6 +319,18 @@
             });
 
             $('#no_price_filter').on('change', function() {
+                productsTable.draw();
+            });
+
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                if (!$('#zero_stock_filter').is(':checked')) {
+                    return true;
+                }
+                const cells = settings.aoData[dataIndex].nTr.getElementsByTagName('td');
+                return cells[3] && cells[3].getAttribute('data-zero-stock') === '1';
+            });
+
+            $('#zero_stock_filter').on('change', function() {
                 productsTable.draw();
             });
 
