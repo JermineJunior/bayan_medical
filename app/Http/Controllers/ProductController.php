@@ -383,9 +383,9 @@ class ProductController extends Controller
         $stocks = Stock::get();
         foreach ($stock_details as $value) {
             $product = Product::with('units')->find($value->product_id);
-            $conversion_factor = $product->units()->firstWhere('unit_id', $value->unit_id)->pivot->conversion_factor;
-            $qty = $value->wared / $conversion_factor;
-            $value->qty = $qty;
+            $unit = $product?->units()->firstWhere('unit_id', $value->unit_id);
+            $conversion_factor = $unit?->pivot->conversion_factor ?: 1;
+            $value->qty = $value->wared / $conversion_factor;
         }
         return view('product.open', compact('products', 'stock_details', 'stocks'));
     }
